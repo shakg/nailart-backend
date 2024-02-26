@@ -1,11 +1,18 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { OpenaiService } from './services/openai/openai.service';
 
 @Controller()
 export class AppController {
-  constructor() {}
+  constructor(private readonly openaiService:OpenaiService) {}
 
-  @Post()
-  generateImage(): string {
-    return "true"
+  // Returns URL of the generated Image
+  @Post('generate-image')
+  generateImage(@Body() body: any): Promise<string> {
+    return new Promise((resolve)=>{
+      this.openaiService.generateImage(body.prompt).subscribe((response)=>{
+        console.log(response.data)
+        resolve(response.data.data[0].url); 
+      })
+    })
   }
 }
